@@ -1,35 +1,30 @@
-const express = require("express");
+const express = require("express")
+const dotenv = require("dotenv")
+const morgan = require("morgan")
+const connectDB = require("./config/connectDB")
+const customersRoute = require("./routes/customersRoute")
+const usersRoute = require("./routes/usersRoute")
 
-const morgan = require("morgan");
+dotenv.config()
 
-const dotenv = require("dotenv");
+const app = express()
 
-const connectDB = require("./config/connectDB");
-
-const techniciansRoute = require("./routes/techniciansRoute");
-
-dotenv.config();
-
-const app = express();
-
-//CONNECTION
+//connection
 connectDB();
 
-//MIDDLEWARES
+//middlewares
 app.use(express.json());
-
 app.use(morgan("dev"));
 
-//ROUTES
+//routes
+app.use("/api/v2/customers", customersRoute);
+app.use("/api/v1/users", usersRoute);
 
-app.use("/api/v6/technicians", techniciansRoute);
+//home route
+app.get("/", (req,res)=> {
+    res.send("<h1>welcome to our customers api</h1>")
+})
 
-//HOME ROUTE
+const port = process.env.PORT || 7070;
 
-app.get("/", (req, res) => {
-  res.send("<h2> This is our technicians api</h2>");
-});
-
-const port = process.env.PORT || 7000;
-
-app.listen(port, () => console.log(`server is running on ${port}`));
+app.listen(port, () => console.log(`server started on port ${port}`))
